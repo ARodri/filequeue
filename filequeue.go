@@ -30,7 +30,7 @@ type Message struct {
 }
 
 func NewFileQueue(dataDir, archiveDir string) (*FileQueue, error) {
-	if _, err := os.Stat(archiveDir); os.IsNotExist(err) {
+	if _, err := os.Stat(dataDir); os.IsNotExist(err) {
 		err := os.MkdirAll(dataDir, os.FileMode(int(0770)))
 		if err != nil {
 			return nil, fmt.Errorf("error creating data dir:", err)
