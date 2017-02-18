@@ -34,8 +34,8 @@ func TestReadWrite(t *testing.T) {
 		t.Fatal(err)
 	}
 	fq.Clear()
-	fq.Write([]byte(`{"id":1}`))
-	fq.Write([]byte(`{"id":2}`))
+	fq.Write([]byte(`{"id":1}`), nil)
+	fq.Write([]byte(`{"id":2}`), nil)
 	msg := <-fq.Read()
 	fmt.Printf("Error: %v, Data: %s\n", msg.Err, string(msg.Msg))
 	if msg.Err != nil {
@@ -57,8 +57,10 @@ func TestReadWriteParallel(t *testing.T) {
 	wg := sync.WaitGroup{}
 	wg.Add(1)
 	go func() {
-		fq.Write(NewDummyStruct().GetJson())
-		fq.Write(NewDummyStruct().GetJson())
+		id1 := "1"
+		id2 := "2"
+		fq.Write(NewDummyStruct().GetJson(), &id1)
+		fq.Write(NewDummyStruct().GetJson(), &id2)
 		wg.Done()
 	}()
 
@@ -87,7 +89,7 @@ func BenchmarkInsert(b *testing.B) {
 	b.ResetTimer()
 	data := NewDummyStruct().GetJson()
 	for i := 0; i < b.N; i++ {
-		fq.Write(data)
+		fq.Write(data, nil)
 		<-fq.Read()
 	}
 	b.StopTimer()

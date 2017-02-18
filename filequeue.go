@@ -146,10 +146,17 @@ func (fq *FileQueue) start() {
 	}
 }
 
-func (fq *FileQueue) Write(msg []byte) {
+func (fq *FileQueue) Write(msg []byte, filename *string) {
 	fq.qLock.Lock()
-	msgFileName := strconv.Itoa(int(time.Now().UnixNano()))
+
+	var msgFileName string
+	if filename != nil {
+		msgFileName = *filename
+	} else {
+		msgFileName = strconv.Itoa(int(time.Now().UnixNano()))
+	}
 	msgFile := filepath.Join(fq.dataDir, msgFileName)
+
 	err := ioutil.WriteFile(
 		msgFile,
 		msg,
